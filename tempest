@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+use App\AppPackage;
+use Tempest\AppConfig;
+use Tempest\Application\Environment;
+use Tempest\ExternalPackage\TempestExternalPackage;
+use Tempest\Tempest;
+use Tempest\TempestPackage;
+use function Tempest\env;
+
+try {
+    require_once __DIR__ . '/vendor/autoload.php';
+} catch (Throwable) {
+    require_once getcwd() . '/../autoload.php';
+}
+
+Tempest::setupEnv(__DIR__);
+
+$appConfig = new AppConfig(
+    environment: Environment::from(env('ENVIRONMENT')),
+    discoveryCache: env('DISCOVERY_CACHE'),
+    packages: [
+        new TempestPackage(),
+        new AppPackage(),
+        new TempestExternalPackage(),
+    ],
+);
+
+Tempest::boot($appConfig)->console()->run();
+
+exit;
